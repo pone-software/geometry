@@ -74,3 +74,33 @@ def apply_transformations(
     moved_strings = apply_rotation(strings, rotation_angle)
     moved_strings = apply_displacement(moved_strings, displacement)
     return moved_strings
+
+def create_symmetry(N_symmetry: int, starting_angle=0., N_partial=0) -> np.ndarray:
+    """Create a set of strings around (0,0) that is symmetric under N_symmetry rotations.
+    
+    Parameters:
+    -----------
+    N_symmetry: int
+        Number of rotational symmetry steps, i.e. 5 yields a pentagram or 6 yields a hexagon
+
+    Optional parameters:
+    --------------------
+    starting_angle = 0.: float, radian
+        Angle of first string wrt. x axis, counter-clockwise, default = 0
+    N_partial = 0: int, < N_symmetry
+        if > 0, only make partial of symmetric shape
+        if 0: full shape (default)
+
+    Returns:
+    --------
+    n_gon: np.ndarray, shape (N_symmetry x 2)
+        String positions of n-gon
+    
+    """
+    if N_partial>=N_symmetry:
+        raise ValueError(f"N_partial ({N_partial}) is larger than N_symmetry ({N_symmetry}). ")
+    sym_angle = np.deg2rad(360/N_symmetry)
+    stepper = np.arange(N_symmetry) if N_partial==0 else np.arange(N_partial)
+    all_angles = starting_angle + sym_angle * stepper
+    n_gon = np.array([np.cos(all_angles), np.sin(all_angles)]).T
+    return n_gon
